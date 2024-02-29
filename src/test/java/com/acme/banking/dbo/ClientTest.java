@@ -1,6 +1,8 @@
 package com.acme.banking.dbo;
 
 import com.acme.banking.dbo.domain.Client;
+import com.acme.banking.dbo.domain.SavingAccount;
+import com.acme.banking.exception.IllegalAccountOwnerArgumentException;
 import com.acme.banking.exception.IllegalClientArgumentException;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,11 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Test suite")
 public class ClientTest {
-
-//    private final int validId = 5;
-//    private final int invalidId = -5;
-
-
 
     @Test
     public void shouldCreateClientWithValidFields(){
@@ -69,6 +66,40 @@ public class ClientTest {
             assertEquals(IllegalClientArgumentException.class, e.getClass());
             assertEquals("Client name can't be empty!", e.getMessage());
         }
+    }
+
+    @Test
+    public void shouldAddAccountToClient(){
+        int testClientId = 5;
+        String testClientName = "Barney Stinson";
+        Client testClient = new Client(testClientId, testClientName);
+
+        int testAccountId = 7;
+        double testAmount = 2.5;
+
+        SavingAccount testAccount = new SavingAccount(testAccountId, testClient, testAmount);
+
+        testClient.addAccount(testAccount);
+
+        assertTrue(testClient.getAccounts().contains(testAccount));
+    }
+
+    @Test
+    public void shouldNotAddAccountToWrongClient(){
+        int testClientId = 5;
+        String testClientName = "Barney Stinson";
+        Client testClient = new Client(testClientId, testClientName);
+
+        int testClientId2 = 6;
+        String testClientName2 = "Ted Mosby";
+        Client testClient2 = new Client(testClientId2, testClientName2);
+
+        int testAccountId = 7;
+        double testAmount = 2.5;
+
+        SavingAccount testAccount = new SavingAccount(testAccountId, testClient, testAmount);
+
+        assertThrows(IllegalAccountOwnerArgumentException.class, ()-> testClient2.addAccount(testAccount));
     }
 
 
