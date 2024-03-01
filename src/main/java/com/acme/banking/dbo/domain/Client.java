@@ -5,6 +5,7 @@ import com.acme.banking.exception.IllegalClientArgumentException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Client {
@@ -30,10 +31,13 @@ public class Client {
     }
 
     public Collection<Account> getAccounts() {
-        return accounts;
+        return Collections.unmodifiableCollection(accounts);
     }
 
     public void addAccount(Account account) {
+
+        if (account == null) throw new NullPointerException("Account can't be null");
+
         if (account.getClient().equals(this)) {
             this.accounts.add(account);
         } else {

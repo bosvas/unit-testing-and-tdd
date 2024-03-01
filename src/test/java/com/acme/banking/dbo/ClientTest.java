@@ -5,29 +5,31 @@ import com.acme.banking.dbo.domain.SavingAccount;
 import com.acme.banking.exception.IllegalAccountOwnerArgumentException;
 import com.acme.banking.exception.IllegalClientArgumentException;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-
 @DisplayName("Test suite")
 public class ClientTest {
 
     @Test
-    public void shouldCreateClientWithValidFields(){
+    public void shouldCreateClientWithValidFields() {
         int testId = 5;
         String testName = "Barney Stinson";
 
         Client sut = new Client(testId, testName);
 
-        assertEquals(testId, sut.getId());
-        assertEquals(testName, sut.getName());
+        Assertions.assertAll(
+                () -> assertEquals(testId, sut.getId()),
+                () -> assertEquals(testName, sut.getName())
+        );
     }
 
     @Test
-    public void shouldNotCreateClientWithInvalidId(){
+    public void shouldNotCreateClientWithInvalidId() {
         int testId = -5;
         String testName = "Barney Stinson";
 
@@ -35,13 +37,15 @@ public class ClientTest {
             new Client(testId, testName);
             fail();
         } catch (IllegalClientArgumentException e) {
-            assertEquals(IllegalClientArgumentException.class, e.getClass());
-            assertEquals("Client id can't be lesser then zero", e.getMessage());
+            Assertions.assertAll(
+                    () -> assertEquals(IllegalClientArgumentException.class, e.getClass()),
+                    () -> assertEquals("Client id can't be lesser then zero", e.getMessage())
+            );
         }
     }
 
     @Test
-    public void shouldNotCreateClientWithInvalidNameBlanc(){
+    public void shouldNotCreateClientWithInvalidNameBlanc() {
         int testId = 5;
         String testName = "";
 
@@ -49,13 +53,15 @@ public class ClientTest {
             new Client(testId, testName);
             fail();
         } catch (IllegalClientArgumentException e) {
-            assertEquals(IllegalClientArgumentException.class, e.getClass());
-            assertEquals("Client name can't be empty!", e.getMessage());
+            Assertions.assertAll(
+                    () -> assertEquals(IllegalClientArgumentException.class, e.getClass()),
+                    () -> assertEquals("Client name can't be empty!", e.getMessage())
+            );
         }
     }
 
     @Test
-    public void shouldNotCreateClientWithInvalidNameNull(){
+    public void shouldNotCreateClientWithInvalidNameNull() {
         int testId = 5;
         String testName = null;
 
@@ -63,13 +69,14 @@ public class ClientTest {
             new Client(testId, testName);
             fail();
         } catch (IllegalClientArgumentException e) {
-            assertEquals(IllegalClientArgumentException.class, e.getClass());
-            assertEquals("Client name can't be empty!", e.getMessage());
+            Assertions.assertAll(
+                    () -> assertEquals(IllegalClientArgumentException.class, e.getClass()),
+                    () -> assertEquals("Client name can't be empty!", e.getMessage()));
         }
     }
 
     @Test
-    public void shouldAddAccountToClient(){
+    public void clientShouldAddAccountWhenAccountValid() {
         int testClientId = 5;
         String testClientName = "Barney Stinson";
         Client testClient = new Client(testClientId, testClientName);
@@ -85,21 +92,31 @@ public class ClientTest {
     }
 
     @Test
-    public void shouldNotAddAccountToWrongClient(){
-        int testClientId = 5;
-        String testClientName = "Barney Stinson";
-        Client testClient = new Client(testClientId, testClientName);
+    public void clientShouldNotAddAccountWhenAccountNotValidHasAnotherClient() {
+        int validTestClientId = 5;
+        String validTestClientName = "Barney Stinson";
+        Client validTestClient = new Client(validTestClientId, validTestClientName);
 
-        int testClientId2 = 6;
-        String testClientName2 = "Ted Mosby";
-        Client testClient2 = new Client(testClientId2, testClientName2);
+        int invalidTestClientId2 = 6;
+        String invalidTestClientName2 = "Ted Mosby";
+        Client invalidTestClient2 = new Client(invalidTestClientId2, invalidTestClientName2);
 
         int testAccountId = 7;
         double testAmount = 2.5;
 
-        SavingAccount testAccount = new SavingAccount(testAccountId, testClient, testAmount);
+        SavingAccount testAccount = new SavingAccount(testAccountId, validTestClient, testAmount);
 
-        assertThrows(IllegalAccountOwnerArgumentException.class, ()-> testClient2.addAccount(testAccount));
+        assertThrows(IllegalAccountOwnerArgumentException.class, () -> invalidTestClient2.addAccount(testAccount));
+    }
+
+
+    @Test
+    public void clientShouldNotAddAccountWhenAccountNull() {
+        int testClientId = 5;
+        String testClientName = "Barney Stinson";
+        Client testClient = new Client(testClientId, testClientName);
+
+        assertThrows(NullPointerException.class, () -> testClient.addAccount(null));
     }
 
 
