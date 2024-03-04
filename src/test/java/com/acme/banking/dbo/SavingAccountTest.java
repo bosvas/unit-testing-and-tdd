@@ -24,7 +24,7 @@ public class SavingAccountTest {
 
         Assertions.assertAll(
                 () -> assertEquals(testAccountId, sut.getId()),
-                () -> assertEquals(testAmount, sut.getAmount()),
+                () -> assertEquals(testAmount, sut.getBalance()),
                 () -> assertEquals(testClient, sut.getClient())
         );
     }
